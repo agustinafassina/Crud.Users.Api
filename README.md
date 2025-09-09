@@ -23,13 +23,13 @@ Environment variables setting (auth0 in this case)
   }
 ```
 
-### Dotnet build and run
+### 🚀Dotnet build and run
 ```
 dotnet build
 dotnet run
 ```
 
-### Docker build and run
+### 🚀Docker build and run
 
 ```
 # Docker build
