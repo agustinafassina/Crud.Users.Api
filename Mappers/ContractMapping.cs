@@ -1,7 +1,7 @@
 ﻿
 using AutoMapper;
 
-namespace TemplateApi.Mappers
+namespace UsersApi.Mappers
 {
     public class ContractMapping : Profile
     {

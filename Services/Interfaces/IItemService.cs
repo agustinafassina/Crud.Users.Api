@@ -1,6 +1,6 @@
-using TemplateApi.Services.Dto;
+using UsersApi.Services.Dto;
 
-namespace TemplateApi.Services.Interfaces
+namespace UsersApi.Services.Interfaces
 {
     public interface IItemService
     {

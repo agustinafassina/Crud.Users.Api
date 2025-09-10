@@ -1,4 +1,4 @@
-namespace TemplateApi.Services.Dto
+namespace UsersApi.Services.Dto
 {
     public class ItemDto
 {

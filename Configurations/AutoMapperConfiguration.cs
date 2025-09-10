@@ -1,6 +1,6 @@
-using TemplateApi.Mappers;
+using UsersApi.Mappers;
 
-namespace TemplateApi.Configurations
+namespace UsersApi.Configurations
 {
     public static class AutoMapperConfiguration
     {

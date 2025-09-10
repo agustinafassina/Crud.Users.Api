@@ -1,8 +1,8 @@
 
-using TemplateApi.Services.Dto;
-using TemplateApi.Services.Interfaces;
+using UsersApi.Services.Dto;
+using UsersApi.Services.Interfaces;
 
-namespace TemplateApi.Services.Implementations
+namespace UsersApi.Services.Implementations
 {
     public class ItemService : IItemService
     {

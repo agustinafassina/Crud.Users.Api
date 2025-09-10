@@ -1,17 +1,17 @@
 using AutoMapper;
-using TemplateApi.Services.Interfaces;
+using UsersApi.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
-namespace TemplateApi.Controllers
+namespace UsersApi.Controllers
 {
     [ApiController]
     [Route("api/v1/[controller]")]
-    public class PetController : ControllerBase
+    public class UsersController : ControllerBase
     {
         private readonly IItemService _itemService;
         private readonly IMapper _mapper;
 
-        public PetController(IItemService itemService, IMapper mapper)
+        public UsersController(IItemService itemService, IMapper mapper)
         {
             _itemService = itemService;
             _mapper = mapper;
