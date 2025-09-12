@@ -31,3 +31,8 @@ Indexar user_id en MongoDB.
 Usa cache en consultas frecuentes (Redis, memoria, etc.).
 Backup y recuperación:
 Establece políticas de backup automáticos en SQL y MongoDB.
+
+Testing y monitoreo
+Crea tests unitarios y de integración para la lógica de acceso.
+Monitorea el uso y rendimiento de tus bases y API (Azure Monitor, DataDog, Grafana).
+Configura alertas ante errores o caídas.
