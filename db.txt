@@ -18,3 +18,16 @@
         ip?
 
 Sessions.user_id references Users.id.
+
+Recomendation a tener en cuenta:
+Encriptar contraseñas: Usar algoritmos seguros como bcrypt, Argon2 o PBKDF2.
+Control de acceso: Implementar roles y permisos en tu API para limitar quién puede acceder o modificar información.
+Habilitar CORS y authentication
+Asegúrar de que user_id en MongoDB sea sincronizado con id en SQL.
+En operaciones de creación, evitar duplicados y valida que los IDs coincidan.
+Validar que las sesiones corresponden a usuarios existentes en SQL.
+Indexar email en SQL para búsquedas rápidas.
+Indexar user_id en MongoDB.
+Usa cache en consultas frecuentes (Redis, memoria, etc.).
+Backup y recuperación:
+Establece políticas de backup automáticos en SQL y MongoDB.
