@@ -1,0 +1,20 @@
+# DB: Relational
+- SQL Server (Users table)
+    Propierties:
+        id
+        name
+        lastname
+        email
+        created_date
+        password (encriptado o algo de eso)
+
+# DB: No relational
+- MongoDB (Sessions collection)
+    Propierties
+        objectId
+        created_date
+        user_id
+        tokens
+        ip?
+
+Sessions.user_id references Users.id.
