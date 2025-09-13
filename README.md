@@ -13,6 +13,7 @@ It is an API designed to manage user accounts, generate tokens, and perform rela
 - [ ] Environment variables
 - [x] Docker
 - [x] Azure pipeline
+- [x] Authorization
 
 ## 📄 API Reference
 ### Diagram
