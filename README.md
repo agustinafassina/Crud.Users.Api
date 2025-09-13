@@ -5,6 +5,10 @@ It is an API designed to manage user accounts, generate tokens, and perform rela
 - [x] Implemented
 - [ ] Not implemented
 
+#### Implementations:
+- [x] Docker
+- [x] Azure pipeline
+
 ## 📄 API Reference
 ### Diagram
 <img src="api-diagram.png" alt="Logo del proyecto" width="400" height="450">
