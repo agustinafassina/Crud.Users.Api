@@ -6,6 +6,11 @@ It is an API designed to manage user accounts, generate tokens, and perform rela
 - [ ] Not implemented
 
 #### Implementations:
+- [ ] Sql server
+- [ ] MongoDB
+- [ ] Migrations
+- [ ] Cors
+- [ ] Environment variables
 - [x] Docker
 - [x] Azure pipeline
 
