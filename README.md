@@ -10,9 +10,10 @@ It is an API designed to manage user accounts, generate tokens, and perform rela
 - [ ] MongoDB
 - [ ] Migrations
 - [ ] Cors
-- [ ] Environment variables
+- [x] Environment variables in appsettings.json
 - [x] Docker
-- [x] Azure pipeline
+- [x] Azure pipeline: Elastic Container Registry (AWS)
+- [x] Azure pipeline: Azure Container Registries
 - [x] Authorization
 
 ## 📄 API Reference
