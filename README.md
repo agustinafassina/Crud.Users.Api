@@ -9,7 +9,7 @@ It is an API designed to manage user accounts, generate tokens, and perform rela
 - [ ] Sql server
 - [x] MongoDB: DocumentDB in AWS
 - [ ] Migrations
-- [ ] Cors
+- [x] Cors
 - [x] Environment variables in appsettings.json
 - [x] Docker
 - [x] Azure pipeline: Elastic Container Registry (AWS)
