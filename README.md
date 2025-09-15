@@ -7,7 +7,7 @@ It is an API designed to manage user accounts, generate tokens, and perform rela
 
 #### Implementations
 - [ ] Sql server
-- [ ] MongoDB
+- [x] MongoDB: DocumentDB in AWS
 - [ ] Migrations
 - [ ] Cors
 - [x] Environment variables in appsettings.json

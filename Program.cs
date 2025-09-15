@@ -13,7 +13,7 @@ builder.Services.AddAutoMapper(typeof(UsersApi.Mappers.ContractMapping));
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddTransient<IItemService, ItemService>();
+builder.Services.AddTransient<ISessionsService, SessionsService>();
 
 builder.Services.Configure<MongoSettings>(builder.Configuration.GetSection("MongoDb"));
 
