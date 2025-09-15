@@ -18,25 +18,10 @@ namespace UsersApi.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("pet-one")]
+        [HttpGet("version")]
         public async Task<IActionResult> GetVersion()
         {
-            return Ok("Cleooo :!");
-        }
-
-        [HttpGet("pet-two")]
-        public IActionResult GetItems()
-        {
-            IEnumerable<Services.Dto.ItemDto>? items = _sessionService.GetAllItems();
-            return Ok(items);
-        }
-
-        [HttpGet("pet-three/{id}")]
-        public IActionResult GetById(int id)
-        {
-            Services.Dto.ItemDto item = _sessionService.GetItemById(id);
-            if (item == null) return NotFound();
-            return Ok(item);
+            return Ok("1.0.0");
         }
 
         [HttpPost("create")]
