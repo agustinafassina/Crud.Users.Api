@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using MongoDB.Driver;
+using UsersApi.Repository.MongoClient.Settings;
 using UsersApi.Services.Implementations;
 using UsersApi.Services.Interfaces;
 
@@ -11,6 +14,14 @@ builder.Services.AddAutoMapper(typeof(UsersApi.Mappers.ContractMapping));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<IItemService, ItemService>();
+
+builder.Services.Configure<MongoSettings>(builder.Configuration.GetSection("MongoDb"));
+
+builder.Services.AddSingleton<IMongoClient>(sp =>
+{
+    var settings = sp.GetRequiredService<IOptions<MongoSettings>>().Value;
+    return new MongoClient(settings.ConnectionString);
+});
 
 builder.Services.AddAuthentication(options =>
 {
