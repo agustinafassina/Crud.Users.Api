@@ -15,6 +15,7 @@ namespace UsersApi.Services.Implementations
         public SessionsService(IMongoClient client, IOptions<MongoSettings> settings)
         {
             var database = client.GetDatabase(settings.Value.DatabaseName);
+            Console.WriteLine("MongoDB connected to database: " + settings.Value.DatabaseName);
             _sessionsCollection = database.GetCollection<BsonDocument>(settings.Value.CollectionSessions);
         }
 

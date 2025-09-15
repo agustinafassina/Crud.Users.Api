@@ -28,7 +28,7 @@ namespace UsersApi.Controllers
         public async Task<IActionResult> CreateSession([FromBody] SessionCreateDto dto)
         {
             await _sessionService.CreateSessionAsync(dto.UserId, dto.SessionData);
-            return Ok(new { message = "Session creada" });
+            return Ok(new { message = "Session created!" });
         }
     }
 }
