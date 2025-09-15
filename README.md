@@ -7,14 +7,16 @@ It is an API designed to manage user accounts, generate tokens, and perform rela
 
 #### Implementations
 - [ ] Sql server
-- [x] MongoDB: DocumentDB in AWS
 - [ ] Migrations
+- [ ] Diagram with python
+- [x] MongoDB: DocumentDB in AWS
 - [x] Cors
 - [x] Environment variables in appsettings.json
 - [x] Docker
 - [x] Azure pipeline: Elastic Container Registry (AWS)
 - [x] Azure pipeline: Azure Container Registries
 - [x] Authorization
+- [ ] Unit Tests
 
 ## 📄 API Reference
 ### Diagram
