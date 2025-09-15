@@ -15,6 +15,16 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<ISessionsService, SessionsService>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins("http://localhost:8000")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 builder.Services.Configure<MongoSettings>(builder.Configuration.GetSection("MongoDb"));
 
 builder.Services.AddSingleton<IMongoClient>(sp =>
@@ -65,6 +75,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors();
 app.MapControllers();
 
 app.Run();
