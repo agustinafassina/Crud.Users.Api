@@ -9,7 +9,7 @@ It is an API designed to manage user accounts, generate tokens, and perform rela
 - [ ] Sql server
 - [ ] Migrations
 - [ ] Diagram with python
-- [x] MongoDB: DocumentDB in AWS
+- [x] MongoDB: Ec2 in AWS
 - [x] Cors
 - [x] Environment variables in appsettings.json
 - [x] Docker
@@ -19,8 +19,11 @@ It is an API designed to manage user accounts, generate tokens, and perform rela
 - [ ] Unit Tests
 
 ## 📄 API Reference
+### Databases
+<img src="rds-ec2-users.png" alt="Logo del proyecto" width="400" height="450">
 ### Diagram
 <img src="api-diagram.png" alt="Logo del proyecto" width="400" height="450">
+
 
 ### 🔐Authorization
 It implements JWT authentication to secure endpoints, validating issuer, audience, and signature, allowing access only to authorized users.
