@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
-using UsersApi.Repository.MongoClient.Settings;
+using UsersApi.Repositories.MongoClient.Settings;
 using UsersApi.Services.Implementations;
 using UsersApi.Services.Interfaces;
 

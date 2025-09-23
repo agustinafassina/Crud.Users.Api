@@ -4,6 +4,6 @@ namespace UsersApi.Services.Interfaces
 {
     public interface ISessionsService
     {
-        Task CreateSessionAsync(string userId, string sessionData);
+        Task CreateSessionAsync(int userId, string expirationToken, string token);
     }
 }

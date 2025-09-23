@@ -25,9 +25,16 @@ namespace UsersApi.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> CreateSession([FromBody] SessionCreateDto dto)
+        public async Task<IActionResult> CreateSession([FromBody] SessionCreateRequest dto)
         {
-            await _sessionService.CreateSessionAsync(dto.UserId, dto.SessionData);
+            await _sessionService.CreateSessionAsync(dto.UserId, dto.ExpirationToken, dto.Token);
+            return Ok(new { message = "Session created!" });
+        }
+
+        [HttpPost("create-user")]
+        public async Task<IActionResult> CreateUser([FromBody] SessionCreateRequest dto)
+        {
+            await _sessionService.CreateSessionAsync(dto.UserId, dto.ExpirationToken, dto.Token);
             return Ok(new { message = "Session created!" });
         }
     }
