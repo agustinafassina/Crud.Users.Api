@@ -39,6 +39,20 @@ namespace UsersApi.Controllers
             return Ok(userEntities);
         }
 
+        [HttpPost("generate-token")]
+        public async Task<IActionResult> GenerateToken([FromBody] LoginRequest loginRequest)
+        {
+            var user = await _userService.ValidateUserAsync(loginRequest.Email, loginRequest.Password);
+
+            if (user == null)
+            {
+                return Unauthorized("The user does not exist");
+            }
+
+            string tokenString = "tolennnnnnnnnnn";
+            return Ok(tokenString);
+        }
+
         [HttpGet("version")]
         public async Task<IActionResult> GetVersion()
         {

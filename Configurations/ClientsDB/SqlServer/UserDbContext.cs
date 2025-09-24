@@ -24,6 +24,10 @@ namespace UsersApi.Configurations.ClientsDB.SqlServer
                 new StatusDtoContext { Id = 2, Name = "Enable" }
             );
 
+            modelBuilder.Entity<UserDtoContext>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
+
             base.OnModelCreating(modelBuilder);
         }
     }
