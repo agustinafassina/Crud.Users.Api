@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using UsersApi.Repositories.MongoClient.Settings;
+using UsersApi.ClientsDB.Mongo;
 using UsersApi.Services.Interfaces;
 
 namespace UsersApi.Services.Implementations

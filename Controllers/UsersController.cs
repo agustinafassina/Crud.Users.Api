@@ -2,6 +2,7 @@ using AutoMapper;
 using UsersApi.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using UsersApi.Mappers.Requests;
+using UsersApi.Services.Dto;
 
 namespace UsersApi.Controllers
 {
@@ -9,13 +10,26 @@ namespace UsersApi.Controllers
     [Route("api/v1/[controller]")]
     public class UsersController : ControllerBase
     {
-        private readonly ISessionsService _sessionService;
         private readonly IMapper _mapper;
+        private readonly IUsersService _userService;
 
-        public UsersController(ISessionsService itemService, IMapper mapper)
+        public UsersController(IMapper mapper, IUsersService userService)
         {
-            _sessionService = itemService;
             _mapper = mapper;
+            _userService = userService;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody] UserCreateDtoRequest dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            UserEntity userEntity = _mapper.Map<UserEntity>(dto);
+            var user = await _userService.CreateUserAsync(userEntity);
+
+            // Fatla cambiar el return por CreatedAtAction
+            return Ok(user);
         }
 
         [HttpGet("version")]
@@ -24,18 +38,5 @@ namespace UsersApi.Controllers
             return Ok("1.0.0");
         }
 
-        [HttpPost("create")]
-        public async Task<IActionResult> CreateSession([FromBody] SessionCreateRequest dto)
-        {
-            await _sessionService.CreateSessionAsync(dto.UserId, dto.ExpirationToken, dto.Token);
-            return Ok(new { message = "Session created!" });
-        }
-
-        [HttpPost("create-user")]
-        public async Task<IActionResult> CreateUser([FromBody] SessionCreateRequest dto)
-        {
-            await _sessionService.CreateSessionAsync(dto.UserId, dto.ExpirationToken, dto.Token);
-            return Ok(new { message = "Session created!" });
-        }
     }
 }

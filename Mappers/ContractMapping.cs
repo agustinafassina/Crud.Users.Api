@@ -1,5 +1,9 @@
 ﻿
 using AutoMapper;
+using UsersApi.ClientsDB.SqlServer;
+using UsersApi.ClientsDB.SqlServer.Dto;
+using UsersApi.Mappers.Requests;
+using UsersApi.Services.Dto;
 
 namespace UsersApi.Mappers
 {
@@ -7,6 +11,9 @@ namespace UsersApi.Mappers
     {
         public ContractMapping()
         {
+            CreateMap<UserCreateDtoRequest, UserEntity>();
+            CreateMap<UserCreateDtoRequest, UserEntity>();
+            CreateMap<UserDbContext, UserEntity>();
         }
     }
 }

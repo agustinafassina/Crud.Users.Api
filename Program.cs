@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
-using UsersApi.Repositories.MongoClient.Settings;
+using UsersApi.ClientsDB.Mongo;
+using UsersApi.ClientsDB.SqlServer;
 using UsersApi.Services.Implementations;
 using UsersApi.Services.Interfaces;
 
@@ -14,6 +16,7 @@ builder.Services.AddAutoMapper(typeof(UsersApi.Mappers.ContractMapping));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<ISessionsService, SessionsService>();
+builder.Services.AddTransient<IUsersService, UsersService>();
 
 builder.Services.AddCors(options =>
 {
@@ -25,13 +28,17 @@ builder.Services.AddCors(options =>
     });
 });
 
+// MongoDB Configuration
 builder.Services.Configure<MongoSettings>(builder.Configuration.GetSection("MongoDb"));
-
 builder.Services.AddSingleton<IMongoClient>(sp =>
 {
     var settings = sp.GetRequiredService<IOptions<MongoSettings>>().Value;
     return new MongoClient(settings.ConnectionString);
 });
+
+// SQL Server Configuration
+builder.Services.AddDbContext<UserDbContext>(options =>
+options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddAuthentication(options =>
 {

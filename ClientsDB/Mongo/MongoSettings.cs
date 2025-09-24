@@ -1,4 +1,4 @@
-namespace UsersApi.Repositories.MongoClient.Settings
+namespace UsersApi.ClientsDB.Mongo
 {
     public class MongoSettings
     {
