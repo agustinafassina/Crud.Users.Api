@@ -59,3 +59,13 @@ docker run -d -p 8787:80 -e "ASPNETCORE_ENVIRONMENT=Development" --name api api
 ```
 
 
+### Migration in Sql Server
+```
+dotnet ef migrations add InitialCreate
+dotnet ef database update
+
+// delete db
+dotnet ef migrations remove
+```
+
+
