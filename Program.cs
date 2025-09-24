@@ -3,8 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
-using UsersApi.ClientsDB.Mongo;
-using UsersApi.ClientsDB.SqlServer;
+using UsersApi.Configurations.ClientsDB.Mongo;
+using UsersApi.Configurations.ClientsDB.SqlServer;
 using UsersApi.Services.Implementations;
 using UsersApi.Services.Interfaces;
 

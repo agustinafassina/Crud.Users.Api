@@ -1,7 +1,6 @@
 ﻿
 using AutoMapper;
-using UsersApi.ClientsDB.SqlServer;
-using UsersApi.ClientsDB.SqlServer.Dto;
+using UsersApi.Configurations.ClientsDB.SqlServer.Dto;
 using UsersApi.Mappers.Requests;
 using UsersApi.Services.Dto;
 

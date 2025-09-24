@@ -1,5 +1,3 @@
-using UsersApi.ClientsDB.SqlServer.Dto;
-
 namespace UsersApi.Services.Dto
 {
     public class UserEntity

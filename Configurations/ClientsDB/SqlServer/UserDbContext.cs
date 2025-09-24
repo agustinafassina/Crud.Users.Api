@@ -1,8 +1,7 @@
-using System.Reflection;
 using Microsoft.EntityFrameworkCore;
-using UsersApi.ClientsDB.SqlServer.Dto;
+using UsersApi.Configurations.ClientsDB.SqlServer.Dto;
 
-namespace UsersApi.ClientsDB.SqlServer
+namespace UsersApi.Configurations.ClientsDB.SqlServer
 {
     public class UserDbContext : DbContext
     {

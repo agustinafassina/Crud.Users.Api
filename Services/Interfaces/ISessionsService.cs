@@ -1,4 +1,3 @@
-using UsersApi.Services.Dto;
 
 namespace UsersApi.Services.Interfaces
 {

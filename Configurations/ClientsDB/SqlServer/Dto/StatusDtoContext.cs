@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace UsersApi.ClientsDB.SqlServer.Dto
+namespace UsersApi.Configurations.ClientsDB.SqlServer.Dto
 {
     public class StatusDtoContext
     {
