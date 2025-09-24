@@ -32,6 +32,13 @@ namespace UsersApi.Controllers
             return Ok(user);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetUsers()
+        {
+            List<UserEntity>? userEntities = await _userService.GetUsers();
+            return Ok(userEntities);
+        }
+
         [HttpGet("version")]
         public async Task<IActionResult> GetVersion()
         {

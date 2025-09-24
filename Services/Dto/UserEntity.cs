@@ -12,5 +12,4 @@ namespace UsersApi.Services.Dto
         public string? OtherProperty { get; set; }
         public int StatusId { get; set; }
     }
-
 }

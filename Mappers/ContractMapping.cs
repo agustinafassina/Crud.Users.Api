@@ -12,8 +12,8 @@ namespace UsersApi.Mappers
         public ContractMapping()
         {
             CreateMap<UserCreateDtoRequest, UserEntity>();
-            CreateMap<UserCreateDtoRequest, UserEntity>();
-            CreateMap<UserDbContext, UserEntity>();
+            CreateMap<UserDtoContext, UserEntity>();
+            CreateMap<StatusDtoContext, StatusEntity>();
         }
     }
 }

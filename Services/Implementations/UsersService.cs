@@ -42,5 +42,12 @@ namespace UsersApi.Services.Implementations
             // Usar BCrypt o PBKDF2
             return password; // placeholder, reemplazar con hashing real
         }
+
+        public async Task<List<UserEntity>> GetUsers()
+        {
+            List<UserDtoContext>? users = _context.Users.ToList();
+            List<UserEntity>? userEntities = _mapper.Map<List<UserEntity>>(users);
+            return userEntities;
+        }
     }
 }

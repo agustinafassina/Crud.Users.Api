@@ -12,7 +12,6 @@ namespace UsersApi.ClientsDB.SqlServer.Dto
         public DateTime CreatedDate { get; set; }
         public string Password { get; set; }
         public string? OtherProperty { get; set; }
-
         public int StatusId { get; set; }
         public StatusDtoContext Status { get; set; }
     }
