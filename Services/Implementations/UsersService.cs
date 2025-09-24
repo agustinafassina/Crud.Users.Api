@@ -37,10 +37,10 @@ namespace UsersApi.Services.Implementations
             return entity;
         }
 
-        private string HashPassword(string password)
+        private string HashPassword(string plainPassword)
         {
-            // Usar BCrypt o PBKDF2
-            return password; // placeholder, reemplazar con hashing real
+            return BCrypt.Net.BCrypt.HashPassword(plainPassword);
+
         }
 
         public async Task<List<UserEntity>> GetUsers()

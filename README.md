@@ -10,8 +10,9 @@ It is an API designed to manage user accounts, generate tokens, and perform rela
 #### Implementations
 - [ ] Diagram with python
 - [x] MongoDB: Ec2 in AWS
-- [ ] Sql server
-- [ ] Migrations
+- [x] Sql server
+- [x] Migrations
+- [x] Encrypted password
 - [x] Cors
 - [x] Environment variables in appsettings.json
 - [x] Docker
