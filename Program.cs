@@ -18,6 +18,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<ISessionsService, SessionsService>();
 builder.Services.AddTransient<IUsersService, UsersService>();
 
+builder.Services.Configure<SecurityAuth>(builder.Configuration.GetSection("SecurityAuth"));
+
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
@@ -45,14 +47,16 @@ builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 })
-.AddJwtBearer("Auth0App1", options =>
+.AddJwtBearer("SecurityAuth", options =>
 {
-    options.Audience = configuration["Auth0App1:Audience"] ?? Environment.GetEnvironmentVariable("Auth0App1.Audience");
-    options.Authority = configuration["Auth0App1:Issuer"] ?? Environment.GetEnvironmentVariable("Auth0App1.Issuer");
+    options.Audience = configuration["SecurityAuth:Audience"] ?? Environment.GetEnvironmentVariable("SecurityAuth.Audience");
+    options.Authority = configuration["SecurityAuth:Authority"] ?? Environment.GetEnvironmentVariable("SecurityAuth.Authority");
+
+    options.RequireHttpsMetadata = false;
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
-        ValidIssuer = configuration["Auth0App1:Issuer"] ?? Environment.GetEnvironmentVariable("Auth0App1.Issuer")
+        ValidIssuer = options.Authority
     };
 });
 

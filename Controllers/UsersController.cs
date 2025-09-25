@@ -3,6 +3,7 @@ using UsersApi.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using UsersApi.Mappers.Requests;
 using UsersApi.Services.Dto;
+using Microsoft.AspNetCore.Authorization;
 
 namespace UsersApi.Controllers
 {
@@ -49,10 +50,12 @@ namespace UsersApi.Controllers
                 return Unauthorized("The user does not exist");
             }
 
-            string tokenString = "tolennnnnnnnnnn";
+            string tokenString = _userService.GenerateJwtToken(user);
             return Ok(tokenString);
         }
 
+
+        [Authorize(AuthenticationSchemes = "SecurityAuth")]
         [HttpGet("version")]
         public async Task<IActionResult> GetVersion()
         {

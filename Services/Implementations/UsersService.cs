@@ -1,4 +1,10 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using UsersApi.Configurations.ClientsDB.SqlServer;
 using UsersApi.Configurations.ClientsDB.SqlServer.Dto;
 using UsersApi.Services.Dto;
@@ -10,24 +16,26 @@ namespace UsersApi.Services.Implementations
     {
         private readonly UserDbContext _context;
         private readonly IMapper _mapper;
-        public UsersService(UserDbContext context, IMapper mapper)
+        private readonly Configurations.ClientsDB.Mongo.SecurityAuth _jwtSettings;
+        public UsersService(UserDbContext context, IMapper mapper, IOptions<Configurations.ClientsDB.Mongo.SecurityAuth> jwtSettings)
         {
+            _jwtSettings = jwtSettings.Value;
             _context = context;
             _mapper = mapper;
         }
 
         public async Task<UserEntity> CreateUserAsync(UserEntity entity)
         {
-            var passwordHash = HashPassword(entity.Password);
+            string passwordHash = HashPassword(entity.Password);
 
-            var user = new UserDtoContext
+            UserDtoContext user = new UserDtoContext
             {
                 Name = entity.Name,
                 Email = entity.Email,
                 Password = passwordHash,
                 OtherProperty = entity.OtherProperty,
                 CreatedDate = DateTime.UtcNow,
-                StatusId = 1
+                StatusId = 2
             };
 
             _context.Users.Add(user);
@@ -47,6 +55,37 @@ namespace UsersApi.Services.Implementations
             List<UserDtoContext>? users = _context.Users.ToList();
             List<UserEntity>? userEntities = _mapper.Map<List<UserEntity>>(users);
             return userEntities;
+        }
+
+        public async Task<UserEntity> ValidateUserAsync(string email, string password)
+        {
+            UserDtoContext userDto = await _context.Users.FirstOrDefaultAsync(u => u.Email == email && u.StatusId == 2);
+            if (userDto == null)
+                return null;
+
+            if (BCrypt.Net.BCrypt.Verify(password, userDto.Password))
+            {
+                UserEntity userEntity = _mapper.Map<UserEntity>(userDto);
+                return userEntity;
+            }
+
+            return null;
+        }
+
+        public string GenerateJwtToken(UserEntity user)
+        {
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            JwtSecurityToken token = new JwtSecurityToken(
+                issuer: _jwtSettings.Authority,
+                audience: _jwtSettings.Audience,
+                expires: DateTime.UtcNow.AddHours(1),
+                signingCredentials: creds
+            );
+
+            string tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+            return tokenString;
         }
     }
 }
