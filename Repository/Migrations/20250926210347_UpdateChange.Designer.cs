@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using UsersApi.Repository.SqlServer;
 
@@ -11,9 +12,11 @@ using UsersApi.Repository.SqlServer;
 namespace UsersApi.Migrations
 {
     [DbContext(typeof(UserDbContext))]
-    partial class UserDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250926210347_UpdateChange")]
+    partial class UpdateChange
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,7 +25,7 @@ namespace UsersApi.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("UsersApi.Configurations.ClientsDB.SqlServer.Dto.StatusDtoContext", b =>
+            modelBuilder.Entity("UsersApi.Repository.SqlServer.Dto.StatusDtoContext", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -51,7 +54,7 @@ namespace UsersApi.Migrations
                         });
                 });
 
-            modelBuilder.Entity("UsersApi.Configurations.ClientsDB.SqlServer.Dto.UserDtoContext", b =>
+            modelBuilder.Entity("UsersApi.Repository.SqlServer.Dto.UserDtoContext", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -92,9 +95,9 @@ namespace UsersApi.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("UsersApi.Configurations.ClientsDB.SqlServer.Dto.UserDtoContext", b =>
+            modelBuilder.Entity("UsersApi.Repository.SqlServer.Dto.UserDtoContext", b =>
                 {
-                    b.HasOne("UsersApi.Configurations.ClientsDB.SqlServer.Dto.StatusDtoContext", "Status")
+                    b.HasOne("UsersApi.Repository.SqlServer.Dto.StatusDtoContext", "Status")
                         .WithMany()
                         .HasForeignKey("StatusId")
                         .OnDelete(DeleteBehavior.Cascade)
