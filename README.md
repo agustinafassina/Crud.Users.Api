@@ -32,10 +32,11 @@ It implements JWT authentication to secure endpoints, validating issuer, audienc
 ```
 Environment variables setting (auth0 in this case)
 ```
-  "Security": {
-    "Issuer": "https://test.asdasdasd.auth0/",
-    "Audience": "Test-Api"
-  }
+  "SecurityAuth": {
+    "Authority": "https://AgusFassina",
+    "Audience": "AgusFassina",
+    "SecretKey": "das2...............21"
+  },
 ```
 
 ### 🚀Dotnet build and run
