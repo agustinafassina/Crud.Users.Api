@@ -1,4 +1,4 @@
-namespace UsersApi.Mappers.Requests
+namespace UsersApi.Configurations.Mappers.Requests
 {
     public class LoginRequest
     {

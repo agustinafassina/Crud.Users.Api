@@ -1,10 +1,10 @@
 ﻿
 using AutoMapper;
-using UsersApi.Mappers.Requests;
+using UsersApi.Configurations.Mappers.Requests;
 using UsersApi.Repository.SqlServer.Dto;
 using UsersApi.Services.Dto;
 
-namespace UsersApi.Mappers
+namespace UsersApi.Configurations.Mappers
 {
     public class ContractMapping : Profile
     {

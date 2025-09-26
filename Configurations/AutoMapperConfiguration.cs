@@ -1,4 +1,4 @@
-using UsersApi.Mappers;
+using UsersApi.Configurations.Mappers;
 
 namespace UsersApi.Configurations
 {

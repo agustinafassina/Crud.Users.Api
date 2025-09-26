@@ -13,7 +13,7 @@ using UsersApi.Services.Interfaces;
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
-builder.Services.AddAutoMapper(typeof(UsersApi.Mappers.ContractMapping));
+builder.Services.AddAutoMapper(typeof(UsersApi.Configurations.Mappers.ContractMapping));
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

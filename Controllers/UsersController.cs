@@ -1,9 +1,9 @@
 using AutoMapper;
 using UsersApi.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using UsersApi.Mappers.Requests;
 using UsersApi.Services.Dto;
 using Microsoft.AspNetCore.Authorization;
+using UsersApi.Configurations.Mappers.Requests;
 
 namespace UsersApi.Controllers
 {
