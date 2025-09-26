@@ -5,7 +5,8 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
 using UsersApi.Configurations.ClientsDB.Mongo;
-using UsersApi.Configurations.ClientsDB.SqlServer;
+using UsersApi.Repository.MongoDb;
+using UsersApi.Repository.SqlServer;
 using UsersApi.Services.Implementations;
 using UsersApi.Services.Interfaces;
 

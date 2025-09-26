@@ -5,8 +5,8 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using UsersApi.Configurations.ClientsDB.SqlServer;
-using UsersApi.Configurations.ClientsDB.SqlServer.Dto;
+using UsersApi.Repository.SqlServer;
+using UsersApi.Repository.SqlServer.Dto;
 using UsersApi.Services.Dto;
 using UsersApi.Services.Interfaces;
 
