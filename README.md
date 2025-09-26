@@ -8,18 +8,20 @@ It is an API designed to manage user accounts, generate tokens, and perform rela
 - [ ] Not implemented
 
 #### Implementations
-- [ ] Diagram with python
 - [x] MongoDB: Ec2 in AWS
 - [x] Sql server
 - [x] Migrations
+- [ ] Repository (databases)
 - [x] Encrypted password
 - [x] Cors
-- [x] Environment variables in appsettings.json
+- [x] Environment variables
 - [x] Docker
 - [x] Azure pipeline: Elastic Container Registry (AWS)
 - [x] Azure pipeline: Azure Container Registries
 - [x] Authorization
 - [ ] Unit Tests
+- [x] Repository version
+- [ ] Diagram with python
 
 ## 📄 API Reference
 ### Databases
@@ -28,10 +30,10 @@ It is an API designed to manage user accounts, generate tokens, and perform rela
 ### 🔐Authorization
 It implements JWT authentication to secure endpoints, validating issuer, audience, and signature, allowing access only to authorized users.
 ```
+// Controllers:
 [Authorize(AuthenticationSchemes = "SecurityAuth")]
-```
-Environment variables setting (auth0 in this case)
-```
+
+// Variables in the appsettings.json
   "SecurityAuth": {
     "Authority": "https://AgusFassina",
     "Audience": "AgusFassina",
