@@ -17,11 +17,13 @@ namespace UsersApi.Services.Implementations
         private readonly UserDbContext _context;
         private readonly IMapper _mapper;
         private readonly Configurations.ClientsDB.Mongo.SecurityAuth _jwtSettings;
-        public UsersService(UserDbContext context, IMapper mapper, IOptions<Configurations.ClientsDB.Mongo.SecurityAuth> jwtSettings)
+        private readonly ISessionsService _sessionsService;
+        public UsersService(UserDbContext context, IMapper mapper, IOptions<Configurations.ClientsDB.Mongo.SecurityAuth> jwtSettings, ISessionsService sessionsService)
         {
             _jwtSettings = jwtSettings.Value;
             _context = context;
             _mapper = mapper;
+            _sessionsService = sessionsService;
         }
 
         public async Task<UserEntity> CreateUserAsync(UserEntity entity)
@@ -85,6 +87,10 @@ namespace UsersApi.Services.Implementations
             );
 
             string tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
+            // Add saving of the token in the mongodb database
+            var session = _sessionsService.CreateSessionAsync(user.Id, DateTime.UtcNow.AddHours(1), tokenString);
+
             return tokenString;
         }
     }

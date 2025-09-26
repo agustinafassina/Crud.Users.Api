@@ -33,13 +33,6 @@ namespace UsersApi.Controllers
             return Ok(user);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetUsers()
-        {
-            List<UserEntity>? userEntities = await _userService.GetUsers();
-            return Ok(userEntities);
-        }
-
         [HttpPost("generate-token")]
         public async Task<IActionResult> GenerateToken([FromBody] LoginRequest loginRequest)
         {
@@ -54,6 +47,13 @@ namespace UsersApi.Controllers
             return Ok(tokenString);
         }
 
+        [Authorize(AuthenticationSchemes = "SecurityAuth")]
+        [HttpGet]
+        public async Task<IActionResult> GetUsers()
+        {
+            List<UserEntity>? userEntities = await _userService.GetUsers();
+            return Ok(userEntities);
+        }
 
         [Authorize(AuthenticationSchemes = "SecurityAuth")]
         [HttpGet("version")]

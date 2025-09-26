@@ -18,7 +18,7 @@ namespace UsersApi.Services.Implementations
             _sessionsCollection = database.GetCollection<BsonDocument>(settings.Value.CollectionSessions);
         }
 
-        public async Task CreateSessionAsync(int userId, string expirationToken, string token)
+        public async Task CreateSessionAsync(int userId, System.DateTime expirationToken, string token)
         {
             var doc = new BsonDocument
             {

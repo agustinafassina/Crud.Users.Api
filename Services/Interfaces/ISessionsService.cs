@@ -3,6 +3,6 @@ namespace UsersApi.Services.Interfaces
 {
     public interface ISessionsService
     {
-        Task CreateSessionAsync(int userId, string expirationToken, string token);
+        Task CreateSessionAsync(int userId, System.DateTime expirationToken, string token);
     }
 }
