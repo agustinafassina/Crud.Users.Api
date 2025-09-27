@@ -23,27 +23,44 @@ namespace UsersApi.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] UserCreateDtoRequest dto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            try
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
 
-            UserEntity userEntity = _mapper.Map<UserEntity>(dto);
-            var user = await _userService.CreateUserAsync(userEntity);
+                UserEntity userEntity = _mapper.Map<UserEntity>(dto);
+                await _userService.CreateUserAsync(userEntity);
 
-            // Fatla cambiar el return por CreatedAtAction
-            return Ok(user);
+                return Created();
+            }
+            catch (System.Exception)
+            {
+                throw;
+            }
         }
 
         [HttpPost("generate-token")]
         public async Task<IActionResult> GenerateToken([FromBody] LoginRequest loginRequest)
         {
-            var user = await _userService.ValidateUserAsync(loginRequest.Email, loginRequest.Password);
+            var userIp = HttpContext.Connection.RemoteIpAddress?.ToString();
+            UserEntity user = await _userService.ValidateUserAsync(loginRequest.Email, loginRequest.Password);
 
             if (user == null)
             {
                 return Unauthorized("The user does not exist");
             }
 
-            string tokenString = _userService.GenerateJwtToken(user);
+            var headers = HttpContext.Request.Headers;
+
+            UserLoginEntity userLogin = _mapper.Map<UserLoginEntity>(user);
+            userLogin.Device = new UserDevice
+            {
+                Ip = userIp,
+                DeviceName = headers["User-Agent"].ToString() ?? "Unknown",
+                DeviceId = headers["X-Device-ID"].ToString() ?? "Unknown"
+            };
+
+            string tokenString = _userService.GenerateJwtToken(userLogin);
             return Ok(tokenString);
         }
 
@@ -51,8 +68,9 @@ namespace UsersApi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetUsers()
         {
-            List<UserEntity>? userEntities = await _userService.GetUsers();
-            return Ok(userEntities);
+            List<UserEntity>? users = await _userService.GetUsers();
+            List<UserResponse> response = _mapper.Map<List<UserResponse>>(users);
+            return Ok(response);
         }
 
         [Authorize(AuthenticationSchemes = "SecurityAuth")]

@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
@@ -28,6 +29,12 @@ namespace UsersApi.Services.Implementations
 
         public async Task<UserEntity> CreateUserAsync(UserEntity entity)
         {
+            if (entity.Password == null || entity.Password.Trim() == string.Empty)
+            {
+                entity.Password = GenerateRandomPassword();
+            }
+
+            Console.WriteLine($"Generated Password: {entity.Password}");
             string passwordHash = HashPassword(entity.Password);
 
             UserDtoContext user = new UserDtoContext
@@ -35,7 +42,6 @@ namespace UsersApi.Services.Implementations
                 Name = entity.Name,
                 Email = entity.Email,
                 Password = passwordHash,
-                OtherProperty = entity.OtherProperty,
                 CreatedDate = DateTime.UtcNow,
                 StatusId = 2
             };
@@ -46,10 +52,32 @@ namespace UsersApi.Services.Implementations
             return entity;
         }
 
+        private string GenerateRandomPassword()
+        {
+            int length = 16;
+            const string validChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-+=[]{}|;:,.<>?";
+            char[] passwordChars = new char[length];
+            using (var rng = new RNGCryptoServiceProvider())
+            {
+                byte[] randomBytes = new byte[length];
+
+                rng.GetBytes(randomBytes);
+
+                for (int i = 0; i < length; i++)
+                {
+                    int idx = randomBytes[i] % validChars.Length;
+                    passwordChars[i] = validChars[idx];
+                }
+            }
+            return new string(passwordChars);
+        }
+
         private string HashPassword(string plainPassword)
         {
-            return BCrypt.Net.BCrypt.HashPassword(plainPassword);
+            if (plainPassword == null || plainPassword.Trim() == string.Empty)
+                throw new ArgumentNullException(nameof(plainPassword));
 
+            return BCrypt.Net.BCrypt.HashPassword(plainPassword);
         }
 
         public async Task<List<UserEntity>> GetUsers()
@@ -74,7 +102,7 @@ namespace UsersApi.Services.Implementations
             return null;
         }
 
-        public string GenerateJwtToken(UserEntity user)
+        public string GenerateJwtToken(UserLoginEntity user)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -89,7 +117,7 @@ namespace UsersApi.Services.Implementations
             string tokenString = new JwtSecurityTokenHandler().WriteToken(token);
 
             // Add saving of the token in the mongodb database
-            var session = _sessionsService.CreateSessionAsync(user.Id, DateTime.UtcNow.AddHours(1), tokenString);
+            _sessionsService.CreateSessionAsync(user, DateTime.UtcNow.AddHours(1), tokenString);
 
             return tokenString;
         }

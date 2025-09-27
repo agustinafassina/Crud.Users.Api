@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using UsersApi.Repository.MongoDb;
+using UsersApi.Services.Dto;
 using UsersApi.Services.Interfaces;
 
 namespace UsersApi.Services.Implementations
@@ -18,14 +19,21 @@ namespace UsersApi.Services.Implementations
             _sessionsCollection = database.GetCollection<BsonDocument>(settings.Value.CollectionSessions);
         }
 
-        public async Task CreateSessionAsync(int userId, System.DateTime expirationToken, string token)
+        public async Task CreateSessionAsync(UserLoginEntity user, DateTime expirationToken, string token)
         {
             var doc = new BsonDocument
             {
-                { "userId", userId },
-                { "created", DateTime.UtcNow },
-                { "expirationToken", expirationToken },
-                { "token", token }
+                { "UserId", user.Id },
+                { "UserDetail",
+                    new BsonDocument
+                    {
+                        { "Ip", user.Device.Ip ?? ""},
+                        { "DeviceId", user.Device.DeviceId ?? "unknown" },
+                        { "DeviceName", user.Device.DeviceName ?? "unknown" }
+                    }
+                },
+                { "ExpirationToken", expirationToken },
+                { "Token", token }
             };
 
             await _sessionsCollection.InsertOneAsync(doc);

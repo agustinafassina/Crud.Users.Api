@@ -1,8 +1,10 @@
 
+using UsersApi.Services.Dto;
+
 namespace UsersApi.Services.Interfaces
 {
     public interface ISessionsService
     {
-        Task CreateSessionAsync(int userId, System.DateTime expirationToken, string token);
+        Task CreateSessionAsync(UserLoginEntity user, DateTime expirationToken, string token);
     }
 }

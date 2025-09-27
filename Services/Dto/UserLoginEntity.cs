@@ -1,6 +1,6 @@
 namespace UsersApi.Services.Dto
 {
-    public class UserEntity
+    public class UserLoginEntity
     {
         public int Id { get; set; }
         public string? Name { get; set; }
@@ -9,5 +9,6 @@ namespace UsersApi.Services.Dto
         public DateTime CreatedDate { get; set; }
         public string? Password { get; set; }
         public int StatusId { get; set; }
+        public UserDevice Device { get; set; }
     }
 }
