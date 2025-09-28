@@ -23,6 +23,11 @@ jobs:
         echo ${{ secrets.AWS_ACCESS_KEY_ID }}
         echo ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
+    - name: Verify secrets are loaded
+      run: |
+        echo "AWS_REGION value: $AWS_REGION"
+        echo "AWS_ACCOUNT_ID value: $AWS_ACCOUNT_ID"
+
     - name: Login to Amazon ECR
       env:
         AWS_REGION: ${{ secrets.AWS_REGION }}
