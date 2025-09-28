@@ -1,4 +1,4 @@
-name: ${{ github.ref_name }}_${{ github.sha }}
+name: Workflow cd/ci
 
 on:
   push:
