@@ -29,7 +29,7 @@ namespace UsersApi.Controllers
         [HttpGet("without-auth")]
         public async Task<IActionResult> GetMethodReviewTestThree()
         {
-            return Ok("It´s ok too!");
+            return Ok("It´s ok too (Authorization disabled)!");
         }
     }
 }
