@@ -14,24 +14,24 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Login to Amazon ECR
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_REGION: ${{ secrets.AWS_REGION }}
-        AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-        REPOSITORY_NAME: ${{ secrets.REPOSITORY_NAME }}
-       
-      run: |
-        aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+      uses: aws-actions/amazon-ecr-login@v1
+      with:
+        region: ${{ secrets.AWS_REGION }}
 
+    - name: Build, tag, and push Docker image
+      uses: aws-actions/amazon-ecr-push-image@v1
+      with:
+        region: ${{ secrets.AWS_REGION }}
+        repository: tf-qa-sales-api
+        image: my-app:${{ github.sha }}
+
+      # opción adicional: si quieres construir la imagen
     - name: Build Docker image
       run: |
         docker build -t ${{ secrets.REPOSITORY_NAME }} .
-
-    - name: Tag Docker image
-      run: |
         docker tag ${{ secrets.REPOSITORY_NAME }}:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.REPOSITORY_NAME }}:${GITHUB_SHA}
-
-    - name: Push image to ECR
-      run: |
         docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.REPOSITORY_NAME }}:${GITHUB_SHA}
+      env:
+        AWS_REGION: ${{ secrets.AWS_REGION }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
