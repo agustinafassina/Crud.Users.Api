@@ -23,7 +23,7 @@ jobs:
       with:
         region: ${{ secrets.AWS_REGION }}
         repository: tf-qa-sales-api
-        image: my-app:${{ github.sha }}
+        image: ${{ secrets.REPOSITORY_NAME }}:${GITHUB_SHA}
 
       # opción adicional: si quieres construir la imagen
     - name: Build Docker image
