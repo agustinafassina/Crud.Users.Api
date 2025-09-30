@@ -18,6 +18,7 @@ It is an API designed to manage user accounts, generate tokens, and perform rela
 - [x] Docker
 - [x] Azure pipeline: Elastic Container Registry (AWS)
 - [x] Azure pipeline: Azure Container Registries
+- [ ] Github action: pipeline with github
 - [x] Authorization
 - [ ] Unit Tests
 - [x] Repository version
@@ -57,7 +58,6 @@ docker run -d -p 8787:80 -e "ASPNETCORE_ENVIRONMENT=Development" --name api api
 # api tests http://localhost:8787/swagger/index.html
 ```
 
-
 ### Migration in Sql Server
 ```
 dotnet ef migrations add InitialCreate
@@ -65,6 +65,23 @@ dotnet ef database update
 
 // delete db
 dotnet ef migrations remove
+```
+
+### Request with curl
+```
+// Users
+curl --request GET --url http://localhost:5142/api/v1/Users --header 'Authorization: Bearer eyJhbG...........................EA'
+
+// Get token
+curl --request POST --url http://localhost:5142/api/v1/Users/generate-token --header 'Content-Type: application/json' --data '{"email": "replaceEmail", "password": replacePass" }'
+
+// Create user
+curl --request POST --url http://localhost:5142/api/v1/Users --header 'Content-Type: application/json' --data '{
+  "name": "Agus-02",
+  "lastName": "",
+  "email": "",
+  "password": ""
+}'
 ```
 
 
