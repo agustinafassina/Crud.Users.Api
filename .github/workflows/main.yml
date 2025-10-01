@@ -13,6 +13,12 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
+    - name: Debug secrets
+      run: |
+        echo "AWS_REGION = ${!{ secrets.AWS_REGION }}" 
+        echo "AWS_ACCOUNT_ID = ${!{ secrets.AWS_ACCOUNT_ID }}" 
+        echo "REPOSITORY_NAME = ${!{ secrets.REPOSITORY_NAME }}"
+
     - name: Login to Amazon ECR
       uses: aws-actions/amazon-ecr-login@v1
       with:
