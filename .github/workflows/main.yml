@@ -15,9 +15,13 @@ jobs:
 
     - name: Debug secrets
       run: |
-        echo "AWS_REGION = ${!{ secrets.AWS_REGION }}" 
-        echo "AWS_ACCOUNT_ID = ${!{ secrets.AWS_ACCOUNT_ID }}" 
-        echo "REPOSITORY_NAME = ${!{ secrets.REPOSITORY_NAME }}"
+        echo "AWS_REGION = $AWS_REGION"
+        echo "AWS_ACCOUNT_ID = $AWS_ACCOUNT_ID"
+        echo "REPOSITORY_NAME = $REPOSITORY_NAME"
+      env:
+        AWS_REGION: ${{ secrets.AWS_REGION }}
+        AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+        REPOSITORY_NAME: ${{ secrets.REPOSITORY_NAME }}
 
     - name: Login to Amazon ECR
       uses: aws-actions/amazon-ecr-login@v1
