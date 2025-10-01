@@ -15,11 +15,9 @@ jobs:
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
-      env:
-        AWS_ROLE: "arn:aws:iam::369474116257:role/aws-service-role/replication.ecr.amazonaws.com/AWSServiceRoleForECRReplication"
       with:
-        aws-region: sa-east-1
-        role-to-assume: $AWS_ROLE
+        aws-region: ${{ secrets.AWS_REGION }}
+        role-to-assume: ${{ secrets.AWS_ROLE }}
 
     - name: Debug secrets
       run: |
