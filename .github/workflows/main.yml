@@ -15,8 +15,11 @@ jobs:
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
+      env:
+        AWS_ROLE: ${{ secrets.AWS_ROLE }}
       with:
         aws-region: sa-east-1
+        role-to-assume: $AWS_ROLE
 
     - name: Debug secrets
       run: |
@@ -43,9 +46,6 @@ jobs:
         REPOSITORY_NAME: ${{ secrets.REPOSITORY_NAME }}
         GITHUB_SHA: ${{ github.sha }}
       run: |
-        # Construimos la imagen
         docker build -t $REPOSITORY_NAME .
-        # Etiquetamos
         docker tag $REPOSITORY_NAME:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPOSITORY_NAME:$GITHUB_SHA
-        # Empujamos
         docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPOSITORY_NAME:$GITHUB_SHA
