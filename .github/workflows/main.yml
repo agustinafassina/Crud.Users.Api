@@ -18,13 +18,6 @@ jobs:
       with:
         region: ${{ secrets.AWS_REGION }}
 
-    - name: Build, tag, and push Docker image
-      uses: aws-actions/amazon-ecr-push-image@v1
-      with:
-        region: ${{ secrets.AWS_REGION }}
-        repository: tf-qa-sales-api
-        image: ${{ secrets.REPOSITORY_NAME }}:${GITHUB_SHA}
-
       # opción adicional: si quieres construir la imagen
     - name: Build Docker image
       run: |
