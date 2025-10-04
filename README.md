@@ -11,7 +11,6 @@ It is an API designed to manage user accounts, generate tokens, and perform rela
 - [x] MongoDB: Ec2 in AWS
 - [x] Sql server
 - [x] Migrations
-- [ ] Repository (databases)
 - [x] Encrypted password
 - [x] Cors
 - [x] Environment variables
@@ -20,9 +19,10 @@ It is an API designed to manage user accounts, generate tokens, and perform rela
 - [x] Azure pipeline: Azure Container Registries
 - [ ] Github action: pipeline with github
 - [x] Authorization
-- [ ] Unit Tests
 - [x] Repository version
 - [ ] Diagram with python
+- [ ] Repository (databases)
+- [ ] Unit Tests
 
 ## 📄 API Reference
 ### Databases
