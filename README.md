@@ -17,12 +17,12 @@ It is an API designed to manage user accounts, generate tokens, and perform rela
 - [x] Docker
 - [x] Azure pipeline: Elastic Container Registry (AWS)
 - [x] Azure pipeline: Azure Container Registries
-- [ ] Github action: pipeline with github
 - [x] Authorization
 - [x] Repository version
-- [ ] Diagram with python
 - [ ] Repository (databases)
 - [ ] Unit Tests
+- [ ] Github action: pipeline with github
+- [ ] Diagram with python
 
 ## 📄 API Reference
 ### Databases
