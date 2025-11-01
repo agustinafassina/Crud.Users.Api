@@ -19,10 +19,10 @@ It is an API designed to manage user accounts, generate tokens, and perform rela
 - [x] Azure pipeline: Azure Container Registries
 - [x] Authorization
 - [x] Repository version
+- [x] Diagram with python
 - [ ] Repository (databases)
 - [ ] Unit Tests
 - [ ] Github action: pipeline with github
-- [ ] Diagram with python
 
 ## 📄 API Reference
 ### Databases
