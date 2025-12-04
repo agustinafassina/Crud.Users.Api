@@ -58,7 +58,7 @@ docker run -d -p 8787:80 -e "ASPNETCORE_ENVIRONMENT=Development" --name api api
 # api tests http://localhost:8787/swagger/index.html
 ```
 
-### Migration in Sql Server
+### Sql Server Migration
 ```
 dotnet ef migrations add InitialCreate
 dotnet ef database update
