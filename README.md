@@ -9,7 +9,7 @@ It is an API designed to manage user accounts, generate tokens, and perform rela
 
 #### Implementations
 - [x] MongoDB: Ec2 in AWS
-- [x] Sql server
+- [x] Sql server: RDS in AWS
 - [x] Migrations
 - [x] Encrypted password
 - [x] Cors
