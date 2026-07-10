@@ -5,3 +5,7 @@
 /Template.Api/bin
 /Template.Api/obj
 *.pem
+obj/
+bin/
+.vscode/
+.idea/

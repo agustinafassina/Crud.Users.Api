@@ -20,7 +20,7 @@ It is an API designed to manage user accounts, generate tokens, and perform rela
 - [x] Repository version
 - [x] Diagram with python
 - [ ] Repository (databases)
-- [ ] Unit Tests
+- [x] Unit Tests
 - [ ] Github action: pipeline with github
 
 ## 📄 API Reference
@@ -39,6 +39,11 @@ It implements JWT authentication to secure endpoints, validating issuer, audienc
     "Audience": "AgusFassina",
     "SecretKey": "das2...............21"
   },
+```
+
+### 🧪 Unit Tests
+```
+dotnet test
 ```
 
 ### 🚀 Dotnet build and run

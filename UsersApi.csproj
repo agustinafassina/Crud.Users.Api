@@ -19,4 +19,11 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.17" />
     <PackageReference Include="System.Security.Cryptography.Pkcs" Version="9.0.9" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="UsersApi.Tests/**" />
+    <EmbeddedResource Remove="UsersApi.Tests/**" />
+    <Content Remove="UsersApi.Tests/**" />
+    <None Remove="UsersApi.Tests/**" />
+  </ItemGroup>
 </Project>
