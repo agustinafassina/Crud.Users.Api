@@ -1,4 +1,4 @@
-## Users.Api 👩🏼‍💻
+## Users.Api 👩🏼‍💻👨🏼‍💻
 It is an API designed to manage user accounts, generate tokens, and perform related operations. It is built to connect to multiple databases, including MongoDB and MySQL, to provide flexible storage options and seamless integration across different data sources. The API serves as a core component for user management in your application infrastructure.
 <img src="api-diagram.png" alt="Logo del proyecto" width="400" height="450">
 
@@ -86,6 +86,4 @@ curl --request POST --url http://localhost:5142/api/v1/Users --header 'Content-T
   "email": "",
   "password": ""
 }'
-```
-
-
+``
