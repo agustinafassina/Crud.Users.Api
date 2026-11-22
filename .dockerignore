@@ -1,0 +1,9 @@
+**/bin/
+**/obj/
+UsersApi.Tests/
+.git/
+.github/
+.vscode/
+.idea/
+*.png
+*.user

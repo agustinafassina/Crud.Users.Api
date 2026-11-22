@@ -2,79 +2,84 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using UsersApi.Configurations.Mappers;
 using UsersApi.Repository.SqlServer;
 using UsersApi.Repository.SqlServer.Dto;
 using UsersApi.Services.Dto;
+using UsersApi.Services.Exceptions;
 using UsersApi.Services.Interfaces;
 
 namespace UsersApi.Services.Implementations
 {
     public class UsersService : IUsersService
     {
+        private const int EnabledStatusId = 2;
+        private const int RandomPasswordLength = 16;
+        private const string PasswordChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-+=[]{}|;:,.<>?";
+        private static readonly TimeSpan TokenLifetime = TimeSpan.FromHours(1);
+
         private readonly UserDbContext _context;
-        private readonly IMapper _mapper;
         private readonly Configurations.ClientsDB.Mongo.SecurityAuth _jwtSettings;
         private readonly ISessionsService _sessionsService;
-        public UsersService(UserDbContext context, IMapper mapper, IOptions<Configurations.ClientsDB.Mongo.SecurityAuth> jwtSettings, ISessionsService sessionsService)
+
+        public UsersService(UserDbContext context, IOptions<Configurations.ClientsDB.Mongo.SecurityAuth> jwtSettings, ISessionsService sessionsService)
         {
             _jwtSettings = jwtSettings.Value;
             _context = context;
-            _mapper = mapper;
             _sessionsService = sessionsService;
         }
 
         public async Task<UserEntity> CreateUserAsync(UserEntity entity)
         {
-            if (entity.Password == null || entity.Password.Trim() == string.Empty)
+            string email = entity.Email.Trim();
+            if (await _context.Users.AnyAsync(u => u.Email == email))
+                throw new DuplicateEmailException(email);
+
+            if (string.IsNullOrWhiteSpace(entity.Password))
             {
                 entity.Password = GenerateRandomPassword();
             }
 
-            Console.WriteLine($"Generated Password: {entity.Password}");
-            string passwordHash = HashPassword(entity.Password);
-
             UserDtoContext user = new UserDtoContext
             {
                 Name = entity.Name,
-                Email = entity.Email,
-                Password = passwordHash,
+                LastName = entity.LastName,
+                Email = email,
+                Password = HashPassword(entity.Password),
                 CreatedDate = DateTime.UtcNow,
-                StatusId = 2
+                StatusId = EnabledStatusId
             };
 
             _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                // Another request may have inserted the same email between the check and the insert (unique index).
+                _context.Entry(user).State = EntityState.Detached;
+                if (await _context.Users.AnyAsync(u => u.Email == email))
+                    throw new DuplicateEmailException(email);
+                throw;
+            }
 
+            entity.Id = user.Id;
+            entity.Email = user.Email;
+            entity.CreatedDate = user.CreatedDate;
+            entity.StatusId = user.StatusId;
             return entity;
         }
 
-        private string GenerateRandomPassword()
+        private static string GenerateRandomPassword() =>
+            RandomNumberGenerator.GetString(PasswordChars, RandomPasswordLength);
+
+        private static string HashPassword(string plainPassword)
         {
-            int length = 16;
-            const string validChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-+=[]{}|;:,.<>?";
-            char[] passwordChars = new char[length];
-            using (var rng = new RNGCryptoServiceProvider())
-            {
-                byte[] randomBytes = new byte[length];
-
-                rng.GetBytes(randomBytes);
-
-                for (int i = 0; i < length; i++)
-                {
-                    int idx = randomBytes[i] % validChars.Length;
-                    passwordChars[i] = validChars[idx];
-                }
-            }
-            return new string(passwordChars);
-        }
-
-        private string HashPassword(string plainPassword)
-        {
-            if (plainPassword == null || plainPassword.Trim() == string.Empty)
+            if (string.IsNullOrWhiteSpace(plainPassword))
                 throw new ArgumentNullException(nameof(plainPassword));
 
             return BCrypt.Net.BCrypt.HashPassword(plainPassword);
@@ -82,42 +87,48 @@ namespace UsersApi.Services.Implementations
 
         public async Task<List<UserEntity>> GetUsers()
         {
-            List<UserDtoContext>? users = _context.Users.ToList();
-            List<UserEntity>? userEntities = _mapper.Map<List<UserEntity>>(users);
-            return userEntities;
+            List<UserDtoContext> users = await _context.Users.ToListAsync();
+            return users.Select(u => u.ToEntity()).ToList();
         }
 
-        public async Task<UserEntity> ValidateUserAsync(string email, string password)
+        public async Task<UserEntity?> ValidateUserAsync(string email, string password)
         {
-            UserDtoContext userDto = await _context.Users.FirstOrDefaultAsync(u => u.Email == email && u.StatusId == 2);
+            UserDtoContext? userDto = await _context.Users.FirstOrDefaultAsync(u => u.Email == email && u.StatusId == EnabledStatusId);
             if (userDto == null)
                 return null;
 
             if (BCrypt.Net.BCrypt.Verify(password, userDto.Password))
-            {
-                UserEntity userEntity = _mapper.Map<UserEntity>(userDto);
-                return userEntity;
-            }
+                return userDto.ToEntity();
 
             return null;
         }
 
-        public string GenerateJwtToken(UserLoginEntity user)
+        public async Task<string> GenerateJwtTokenAsync(UserLoginEntity user)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            DateTime expiration = DateTime.UtcNow.Add(TokenLifetime);
+
+            var claims = new List<Claim>
+            {
+                new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new(JwtRegisteredClaimNames.Email, user.Email),
+                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
+            if (!string.IsNullOrWhiteSpace(user.Name))
+                claims.Add(new Claim(JwtRegisteredClaimNames.GivenName, user.Name));
 
             JwtSecurityToken token = new JwtSecurityToken(
                 issuer: _jwtSettings.Authority,
                 audience: _jwtSettings.Audience,
-                expires: DateTime.UtcNow.AddHours(1),
+                claims: claims,
+                expires: expiration,
                 signingCredentials: creds
             );
 
             string tokenString = new JwtSecurityTokenHandler().WriteToken(token);
 
-            // Add saving of the token in the mongodb database
-            _sessionsService.CreateSessionAsync(user, DateTime.UtcNow.AddHours(1), tokenString);
+            await _sessionsService.CreateSessionAsync(user, expiration, tokenString);
 
             return tokenString;
         }

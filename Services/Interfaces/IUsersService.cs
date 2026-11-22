@@ -5,8 +5,8 @@ namespace UsersApi.Services.Interfaces
     public interface IUsersService
     {
         Task<UserEntity> CreateUserAsync(UserEntity entity);
-        string GenerateJwtToken(UserLoginEntity user);
+        Task<string> GenerateJwtTokenAsync(UserLoginEntity user);
         Task<List<UserEntity>> GetUsers();
-        Task<UserEntity> ValidateUserAsync(string email, string password);
+        Task<UserEntity?> ValidateUserAsync(string email, string password);
     }
 }

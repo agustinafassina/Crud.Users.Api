@@ -1,9 +1,11 @@
-using AutoMapper;
 using UsersApi.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using UsersApi.Services.Dto;
 using Microsoft.AspNetCore.Authorization;
+using UsersApi.Configurations.Mappers;
 using UsersApi.Configurations.Mappers.Requests;
+using UsersApi.Configurations.Mappers.Responses;
+using UsersApi.Services.Exceptions;
 
 namespace UsersApi.Controllers
 {
@@ -11,39 +13,48 @@ namespace UsersApi.Controllers
     [Route("api/v1/[controller]")]
     public class UsersController : ControllerBase
     {
-        private readonly IMapper _mapper;
         private readonly IUsersService _userService;
 
-        public UsersController(IMapper mapper, IUsersService userService)
+        public UsersController(IUsersService userService)
         {
-            _mapper = mapper;
             _userService = userService;
         }
 
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] UserCreateDtoRequest dto)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            bool passwordGenerated = string.IsNullOrWhiteSpace(dto.Password);
+            UserEntity userEntity = dto.ToEntity();
+
             try
             {
-                if (!ModelState.IsValid)
-                    return BadRequest(ModelState);
-
-                UserEntity userEntity = _mapper.Map<UserEntity>(dto);
-                await _userService.CreateUserAsync(userEntity);
-
-                return Created();
+                userEntity = await _userService.CreateUserAsync(userEntity);
             }
-            catch (System.Exception)
+            catch (DuplicateEmailException ex)
             {
-                throw;
+                return Conflict(ex.Message);
             }
+
+            var response = new UserCreatedResponse
+            {
+                Id = userEntity.Id,
+                Email = userEntity.Email,
+                GeneratedPassword = passwordGenerated ? userEntity.Password : null
+            };
+            return Created($"/api/v1/users/{userEntity.Id}", response);
         }
 
         [HttpPost("generate-token")]
         public async Task<IActionResult> GenerateToken([FromBody] LoginRequest loginRequest)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var userIp = HttpContext.Connection.RemoteIpAddress?.ToString();
-            UserEntity user = await _userService.ValidateUserAsync(loginRequest.Email, loginRequest.Password);
+            UserEntity? user = await _userService.ValidateUserAsync(loginRequest.Email, loginRequest.Password);
 
             if (user == null)
             {
@@ -52,15 +63,14 @@ namespace UsersApi.Controllers
 
             var headers = HttpContext.Request.Headers;
 
-            UserLoginEntity userLogin = _mapper.Map<UserLoginEntity>(user);
-            userLogin.Device = new UserDevice
+            UserLoginEntity userLogin = user.ToLoginEntity(new UserDevice
             {
                 Ip = userIp,
                 DeviceName = headers["User-Agent"].ToString() ?? "Unknown",
                 DeviceId = headers["X-Device-ID"].ToString() ?? "Unknown"
-            };
+            });
 
-            string tokenString = _userService.GenerateJwtToken(userLogin);
+            string tokenString = await _userService.GenerateJwtTokenAsync(userLogin);
             return Ok(tokenString);
         }
 
@@ -69,7 +79,7 @@ namespace UsersApi.Controllers
         public async Task<IActionResult> GetUsers()
         {
             List<UserEntity>? users = await _userService.GetUsers();
-            List<UserResponse> response = _mapper.Map<List<UserResponse>>(users);
+            List<UserResponse> response = users.Select(u => u.ToResponse()).ToList();
             return Ok(response);
         }
 

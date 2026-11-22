@@ -1,11 +1,11 @@
 using System.IdentityModel.Tokens.Jwt;
-using AutoMapper;
 using Microsoft.Extensions.Options;
 using Moq;
 using UsersApi.Configurations.ClientsDB.Mongo;
 using UsersApi.Repository.SqlServer;
 using UsersApi.Repository.SqlServer.Dto;
 using UsersApi.Services.Dto;
+using UsersApi.Services.Exceptions;
 using UsersApi.Services.Implementations;
 using UsersApi.Services.Interfaces;
 using UsersApi.Tests.Helpers;
@@ -14,7 +14,6 @@ namespace UsersApi.Tests.Services;
 
 public class UsersServiceTests
 {
-    private readonly IMapper _mapper = MapperFactory.Create();
     private readonly Mock<ISessionsService> _sessionsServiceMock = new();
     private readonly SecurityAuth _jwtSettings = new()
     {
@@ -24,7 +23,7 @@ public class UsersServiceTests
     };
 
     private UsersService CreateService(UserDbContext context) =>
-        new(context, _mapper, Options.Create(_jwtSettings), _sessionsServiceMock.Object);
+        new(context, Options.Create(_jwtSettings), _sessionsServiceMock.Object);
 
     [Fact]
     public async Task CreateUserAsync_WithPassword_HashesAndPersistsUser()
@@ -34,6 +33,7 @@ public class UsersServiceTests
         var entity = new UserEntity
         {
             Name = "John",
+            LastName = "Doe",
             Email = "john@example.com",
             Password = "SecurePass123!"
         };
@@ -43,6 +43,8 @@ public class UsersServiceTests
         Assert.Equal("john@example.com", result.Email);
         UserDtoContext? savedUser = context.Users.Single();
         Assert.Equal("John", savedUser.Name);
+        Assert.Equal("Doe", savedUser.LastName);
+        Assert.Equal(savedUser.Id, result.Id);
         Assert.Equal(2, savedUser.StatusId);
         Assert.NotEqual("SecurePass123!", savedUser.Password);
         Assert.True(BCrypt.Net.BCrypt.Verify("SecurePass123!", savedUser.Password));
@@ -162,26 +164,61 @@ public class UsersServiceTests
     }
 
     [Fact]
-    public void GenerateJwtToken_ReturnsValidTokenWithExpectedClaims()
+    public async Task GenerateJwtTokenAsync_ReturnsValidTokenWithExpectedClaims()
     {
-        using var context = TestDbContextFactory.Create(nameof(GenerateJwtToken_ReturnsValidTokenWithExpectedClaims));
+        await using var context = TestDbContextFactory.Create(nameof(GenerateJwtTokenAsync_ReturnsValidTokenWithExpectedClaims));
         var service = CreateService(context);
         var userLogin = new UserLoginEntity
         {
             Id = 1,
+            Name = "User",
             Email = "user@example.com",
             Device = new UserDevice { Ip = "127.0.0.1", DeviceId = "device-1", DeviceName = "Test" }
         };
 
-        var tokenString = service.GenerateJwtToken(userLogin);
+        var tokenString = await service.GenerateJwtTokenAsync(userLogin);
 
         Assert.False(string.IsNullOrWhiteSpace(tokenString));
         var handler = new JwtSecurityTokenHandler();
         var token = handler.ReadJwtToken(tokenString);
         Assert.Equal(_jwtSettings.Authority, token.Issuer);
         Assert.Contains(_jwtSettings.Audience, token.Audiences);
+        Assert.Equal("1", token.Subject);
+        Assert.Contains(token.Claims, c => c.Type == JwtRegisteredClaimNames.Email && c.Value == "user@example.com");
+        Assert.Contains(token.Claims, c => c.Type == JwtRegisteredClaimNames.GivenName && c.Value == "User");
+        Assert.Contains(token.Claims, c => c.Type == JwtRegisteredClaimNames.Jti);
         _sessionsServiceMock.Verify(
             s => s.CreateSessionAsync(userLogin, It.IsAny<DateTime>(), tokenString),
             Times.Once);
+    }
+
+    [Fact]
+    public async Task CreateUserAsync_DuplicateEmail_ThrowsDuplicateEmailException()
+    {
+        await using var context = TestDbContextFactory.Create(nameof(CreateUserAsync_DuplicateEmail_ThrowsDuplicateEmailException));
+        var service = CreateService(context);
+        await service.CreateUserAsync(new UserEntity { Name = "First", Email = "dup@example.com", Password = "Password1!" });
+
+        await Assert.ThrowsAsync<DuplicateEmailException>(() =>
+            service.CreateUserAsync(new UserEntity { Name = "Second", Email = "dup@example.com", Password = "Password2!" }));
+
+        Assert.Single(context.Users);
+    }
+
+    [Fact]
+    public async Task GenerateJwtTokenAsync_WhenSessionStoreFails_PropagatesException()
+    {
+        await using var context = TestDbContextFactory.Create(nameof(GenerateJwtTokenAsync_WhenSessionStoreFails_PropagatesException));
+        _sessionsServiceMock
+            .Setup(s => s.CreateSessionAsync(It.IsAny<UserLoginEntity>(), It.IsAny<DateTime>(), It.IsAny<string>()))
+            .ThrowsAsync(new InvalidOperationException("mongo down"));
+        var service = CreateService(context);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() => service.GenerateJwtTokenAsync(new UserLoginEntity
+        {
+            Id = 1,
+            Email = "user@example.com",
+            Device = new UserDevice()
+        }));
     }
 }

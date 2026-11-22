@@ -1,9 +1,10 @@
 using System.Net;
-using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using UsersApi.Configurations.Mappers.Requests;
+using UsersApi.Configurations.Mappers.Responses;
+using UsersApi.Services.Exceptions;
 using UsersApi.Controllers;
 using UsersApi.Services.Dto;
 using UsersApi.Services.Interfaces;
@@ -13,12 +14,11 @@ namespace UsersApi.Tests.Controllers;
 
 public class UsersControllerTests
 {
-    private readonly IMapper _mapper = MapperFactory.Create();
     private readonly Mock<IUsersService> _usersServiceMock = new();
 
     private UsersController CreateController()
     {
-        var controller = new UsersController(_mapper, _usersServiceMock.Object)
+        var controller = new UsersController(_usersServiceMock.Object)
         {
             ControllerContext = new ControllerContext
             {
@@ -55,11 +55,15 @@ public class UsersControllerTests
         };
         _usersServiceMock
             .Setup(s => s.CreateUserAsync(It.IsAny<UserEntity>()))
-            .ReturnsAsync((UserEntity e) => e);
+            .ReturnsAsync((UserEntity e) => { e.Id = 7; return e; });
 
         IActionResult? result = await controller.Post(request);
 
-        Assert.IsType<CreatedResult>(result);
+        CreatedResult created = Assert.IsType<CreatedResult>(result);
+        UserCreatedResponse body = Assert.IsType<UserCreatedResponse>(created.Value);
+        Assert.Equal(7, body.Id);
+        Assert.Equal("/api/v1/users/7", created.Location);
+        Assert.Null(body.GeneratedPassword);
         _usersServiceMock.Verify(s => s.CreateUserAsync(It.Is<UserEntity>(u => u.Email == "new@example.com")), Times.Once);
     }
 
@@ -96,8 +100,8 @@ public class UsersControllerTests
             .Setup(s => s.ValidateUserAsync("test@example.com", "pass"))
             .ReturnsAsync(user);
         _usersServiceMock
-            .Setup(s => s.GenerateJwtToken(It.IsAny<UserLoginEntity>()))
-            .Returns("jwt-token-value");
+            .Setup(s => s.GenerateJwtTokenAsync(It.IsAny<UserLoginEntity>()))
+            .ReturnsAsync("jwt-token-value");
 
         IActionResult? result = await controller.GenerateToken(new LoginRequest
         {
@@ -137,5 +141,45 @@ public class UsersControllerTests
 
         OkObjectResult? ok = Assert.IsType<OkObjectResult>(result);
         Assert.Equal("1.0.0", ok.Value);
+    }
+
+    [Fact]
+    public async Task Post_WithoutPassword_ReturnsGeneratedPasswordOnce()
+    {
+        UsersController controller = CreateController();
+        _usersServiceMock
+            .Setup(s => s.CreateUserAsync(It.IsAny<UserEntity>()))
+            .ReturnsAsync((UserEntity e) => { e.Id = 3; e.Password = "generated-pass-16"; return e; });
+
+        IActionResult result = await controller.Post(new UserCreateDtoRequest { Email = "gen@example.com" });
+
+        CreatedResult created = Assert.IsType<CreatedResult>(result);
+        UserCreatedResponse body = Assert.IsType<UserCreatedResponse>(created.Value);
+        Assert.Equal("generated-pass-16", body.GeneratedPassword);
+    }
+
+    [Fact]
+    public async Task Post_DuplicateEmail_ReturnsConflict()
+    {
+        UsersController controller = CreateController();
+        _usersServiceMock
+            .Setup(s => s.CreateUserAsync(It.IsAny<UserEntity>()))
+            .ThrowsAsync(new DuplicateEmailException("dup@example.com"));
+
+        IActionResult result = await controller.Post(new UserCreateDtoRequest { Email = "dup@example.com", Password = "Password1!" });
+
+        Assert.IsType<ConflictObjectResult>(result);
+    }
+
+    [Fact]
+    public async Task GenerateToken_InvalidModelState_ReturnsBadRequest()
+    {
+        UsersController controller = CreateController();
+        controller.ModelState.AddModelError("Email", "Email is required");
+
+        IActionResult result = await controller.GenerateToken(new LoginRequest());
+
+        Assert.IsType<BadRequestObjectResult>(result);
+        _usersServiceMock.Verify(s => s.ValidateUserAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
     }
 }
