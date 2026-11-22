@@ -39,9 +39,10 @@ namespace UsersApi.Services.Implementations
             await _sessionsCollection.InsertOneAsync(doc);
         }
 
-        public async Task<BsonDocument> GetSessionByUserIdAsync(string userId)
+        public async Task<BsonDocument> GetSessionByUserIdAsync(int userId)
         {
-            var filter = Builders<BsonDocument>.Filter.Eq("userId", userId);
+            // Field name and type must match what CreateSessionAsync stores ("UserId", int).
+            var filter = Builders<BsonDocument>.Filter.Eq("UserId", userId);
             return await _sessionsCollection.Find(filter).FirstOrDefaultAsync();
         }
 
